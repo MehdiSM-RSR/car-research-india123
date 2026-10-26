@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Car Specs India: 50 cars, 10 brands</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #E9EEF2;
+  --surface: #FFFFFF;
+  --ink: #12202B;
+  --muted: #5A6B77;
+  --line: #CFD8DF;
+  --accent: #0B7A75;
+  --accent-ink: #FFFFFF;
+  --plate: #F2B705;
+  --plate-ink: #12202B;
+  --head: "Barlow Condensed", "Arial Narrow", Arial, sans-serif;
+  --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0E1820;
+    --surface: #16242E;
+    --ink: #E6EEF2;
+    --muted: #9DB0BC;
+    --line: #2A3C48;
+    --accent: #3CC4BC;
+    --accent-ink: #0E1820;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.5;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 20px 16px 48px; }
+h1, h2, h3 { font-family: var(--head); font-weight: 700; margin: 0; line-height: 1.05; }
+h1 { font-size: 2.1rem; letter-spacing: 0.01em; }
+.sub { color: var(--muted); margin: 6px 0 16px; max-width: 60ch; }
+
+/* search + brand filter */
+.search {
+  width: 100%;
+  padding: 12px 14px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+}
+.search:focus-visible, button:focus-visible, select:focus-visible, .row:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.brands {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 14px 0 6px;
+  scrollbar-width: thin;
+}
+.brands button {
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.brands button[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* spec sheet */
+.sheet {
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
+  margin-top: 14px;
+}
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.plate {
+  font-family: var(--head);
+  font-size: 1.25rem;
+  letter-spacing: 0.08em;
+  background: var(--plate);
+  color: var(--plate-ink);
+  border: 2px solid var(--plate-ink);
+  border-radius: 6px;
+  padding: 2px 12px;
+}
+.nav { display: flex; gap: 8px; }
+.nav button {
+  font: inherit;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: 1.5px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+.title { margin-top: 18px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.brand { color: var(--accent); font-weight: 600; font-size: 1rem; }
+.title h2 { font-size: 2.6rem; }
+.kind { color: var(--muted); margin-top: 2px; }
+.price { text-align: right; }
+.price strong { font-family: var(--head); font-size: 1.9rem; display: block; line-height: 1; }
+.price span { color: var(--muted); font-size: 0.85rem; }
+.specs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  margin: 20px 0 0;
+  border-top: 1.5px solid var(--line);
+}
+.specs div { padding: 12px 8px 12px 0; border-bottom: 1px solid var(--line); }
+.specs dt { color: var(--muted); font-size: 0.85rem; }
+.specs dd { margin: 0; font-weight: 600; }
+.feat-title { font-size: 1.3rem; margin: 20px 0 8px; }
+.feats { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.feats li { padding-left: 12px; border-left: 4px solid var(--accent); }
+.cmp { margin-top: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.cmp label { font-weight: 600; }
+.cmp select {
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  max-width: 100%;
+}
+
+/* compare table */
+.table-wrap { overflow-x: auto; margin-top: 14px; }
+table { border-collapse: collapse; width: 100%; min-width: 480px; }
+th, td { text-align: left; padding: 10px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th { font-family: var(--head); font-size: 1.15rem; border-bottom: 2px solid var(--accent); }
+tbody th { color: var(--muted); font-weight: 400; width: 26%; }
+
+/* list */
+.list-head { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 0 8px; }
+.list-head h3 { font-size: 1.5rem; }
+.count { color: var(--muted); }
+.rows { list-style: none; margin: 0; padding: 0; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; }
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  padding: 11px 14px;
+  cursor: pointer;
+}
+.rows li:last-child .row { border-bottom: 0; }
+.row:hover { background: var(--bg); }
+.row[aria-current="true"] { background: var(--bg); box-shadow: inset 5px 0 0 var(--accent); }
+.row .n { font-weight: 600; }
+.row .t, .row .p { color: var(--muted); font-size: 0.9rem; }
+.row .p { text-align: right; grid-row: 1 / span 2; grid-column: 2; align-self: center; color: var(--ink); font-weight: 600; font-size: 0.95rem; }
+.empty { padding: 28px 16px; text-align: center; color: var(--muted); }
+.note { color: var(--muted); font-size: 0.85rem; margin-top: 20px; }
+
+@media (min-width: 640px) {
+  .wrap { padding-top: 36px; }
+  h1 { font-size: 3rem; }
+  .specs { grid-template-columns: repeat(3, 1fr); }
+  .title h2 { font-size: 3.4rem; }
+  .sheet { padding: 26px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Car Specs India</h1>
+    <p class="sub">Specifications and features for 50 cars from 10 brands. Prices are approximate and ex-showroom.</p>
+    <input id="q" class="search" type="search" placeholder="Search a car or brand, like Creta or Kia" aria-label="Search cars" autocomplete="off">
+    <div id="brands" class="brands" role="group" aria-label="Filter by brand"></div>
+  </header>
+
+  <main>
+    <section id="sheet" class="sheet" aria-live="polite"></section>
+    <div id="compare"></div>
+
+    <div class="list-head">
+      <h3>All cars</h3>
+      <span id="count" class="count"></span>
+    </div>
+    <ul id="rows" class="rows"></ul>
+    <p class="note">Tip: use the left and right arrow keys to move between cars. Check the official brand website before relying on any price or spec.</p>
+  </main>
+</div>
+
+<script>
+const CARS = [
+  {
+    "brand": "Maruti Suzuki",
+    "name": "Alto K10",
+    "type": "Hatchback",
+    "price": "Rs 4.2 - 6.2 L",
+    "engine": "1.0L Petrol (CNG option)",
+    "power": "67 PS",
+    "mileage": "24 - 33 km/l",
+    "transmission": "5MT / AMT",
+    "seats": 5,
+    "features": [
+      "Touchscreen infotainment",
+      "Keyless entry",
+      "Power windows",
+      "Dual airbags"
+    ]
+  },
+  {
+    "brand": "Maruti Suzuki",
+    "name": "Swift",
+    "type": "Hatchback",
+    "price": "Rs 6.5 - 9.6 L",
+    "engine": "1.2L Z-series Petrol",
+    "power": "82 PS",
+    "mileage": "24.8 km/l",
+    "transmission": "5MT / AMT",
+    "seats": 5,
+    "features": [
+      "9-inch touchscreen",
+      "Rear camera",
+      "6 airbags",
+      "Wireless charger"
+    ]
+  },
+  {
+    "brand": "Maruti Suzuki",
+    "name": "Fronx",
+    "type": "Crossover",
+    "price": "Rs 7.5 - 13 L",
+    "engine": "1.2L Petrol / 1.0L Turbo",
+    "power": "90 - 100 PS",
+    "mileage": "20 - 22 km/l",
+    "transmission": "5MT / AMT / 6AT",
+    "seats": 5,
+    "features": [
+      "Head-up display",
+      "360 camera",
+      "9-inch touchscreen",
+      "6 airbags"
+    ]
+  },
+  {
+    "brand": "Maruti Suzuki",
+    "name": "Brezza",
+    "type": "Compact SUV",
+    "price": "Rs 8.3 - 14 L",
+    "engine": "1.5L Petrol (CNG option)",
+    "power": "103 PS",
+    "mileage": "17 - 25 km/l",
+    "transmission": "5MT / 6AT",
+    "seats": 5,
+    "features": [
+      "Sunroof",
+      "Head-up display",
+      "360 camera",
+      "Arkamys sound"
+    ]
+  },
+  {
+    "brand": "Maruti Suzuki",
+    "name": "Ertiga",
+    "type": "MPV",
+    "price": "Rs 8.8 - 13 L",
+    "engine": "1.5L Petrol (CNG option)",
+    "power": "103 PS",
+    "mileage": "20 - 26 km/l",
+    "transmission": "5MT / 6AT",
+    "seats": 7,
+    "features": [
+      "7-seater layout",
+      "Touchscreen",
+      "Rear AC vents",
+      "Cruise control"
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "name": "Grand i10 Nios",
+    "type": "Hatchback",
+    "price": "Rs 5.9 - 8.7 L",
+    "engine": "1.2L Petrol (CNG option)",
+    "power": "83 PS",
+    "mileage": "20 - 25 km/l",
+    "transmission": "5MT / AMT",
+    "seats": 5,
+    "features": [
+      "8-inch touchscreen",
+      "Wireless charger",
+      "Rear AC vents",
+      "6 airbags"
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "name": "Venue",
+    "type": "Compact SUV",
+    "price": "Rs 7.3 - 12.5 L",
+    "engine": "1.2L Petrol / 1.0L Turbo / 1.5L Diesel",
+    "power": "83 - 120 PS",
+    "mileage": "17 - 24 km/l",
+    "transmission": "5MT / 6MT / iMT / DCT",
+    "seats": 5,
+    "features": [
+      "Sunroof",
+      "Dual-screen setup",
+      "ADAS (top variants)",
+      "Wireless charger"
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "name": "Verna",
+    "type": "Sedan",
+    "price": "Rs 11 - 17.5 L",
+    "engine": "1.5L Petrol / 1.5L Turbo",
+    "power": "115 - 160 PS",
+    "mileage": "18 - 20 km/l",
+    "transmission": "6MT / IVT / 7DCT",
+    "seats": 5,
+    "features": [
+      "ADAS",
+      "Ventilated seats",
+      "Bose sound system",
+      "Sunroof"
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "name": "Creta",
+    "type": "Compact SUV",
+    "price": "Rs 11 - 20.2 L",
+    "engine": "1.5L Petrol / Diesel / Turbo",
+    "power": "115 - 160 PS",
+    "mileage": "17 - 21 km/l",
+    "transmission": "6MT / IVT / DCT / AT",
+    "seats": 5,
+    "features": [
+      "Panoramic sunroof",
+      "ADAS",
+      "Ventilated seats",
+      "Bose sound system"
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "name": "Alcazar",
+    "type": "Midsize SUV",
+    "price": "Rs 15 - 21 L",
+    "engine": "1.5L Turbo Petrol / 1.5L Diesel",
+    "power": "116 - 160 PS",
+    "mileage": "17 - 20 km/l",
+    "transmission": "6MT / 7DCT / 6AT",
+    "seats": "6 / 7",
+    "features": [
+      "Panoramic sunroof",
+      "ADAS",
+      "2nd row captain seats",
+      "Bose sound system"
+    ]
+  },
+  {
+    "brand": "Tata",
+    "name": "Tiago",
+    "type": "Hatchback",
+    "price": "Rs 5 - 8.5 L",
+    "engine": "1.2L Revotron Petrol (CNG option)",
+    "power": "86 PS",
+    "mileage": "19 - 26 km/l",
+    "transmission": "5MT / AMT",
+    "seats": 5,
+    "features": [
+      "Touchscreen with Android Auto/CarPlay",
+      "Harman audio",
+      "Push-button start",
+      "Dual airbags"
+    ]
+  },
+  {
+    "brand": "Tata",
+    "name": "Punch",
+    "type": "Micro SUV",
+    "price": "Rs 6 - 10.3 L",
+    "engine": "1.2L Petrol (CNG option)",
+    "power": "88 PS",
+    "mileage": "20.1 km/l",
+    "transmission": "5MT / AMT",
+    "seats": 5,
+    "features": [
+      "5-star safety rating",
+      "Touchscreen",
+      "High ground clearance",
+      "Cruise control"
+    ]
+  },
+  {
+    "brand": "Tata",
+    "name": "Nexon",
+    "type": "Compact SUV",
+    "price": "Rs 8 - 15.6 L",
+    "engine": "1.2L Turbo Petrol / 1.5L Diesel",
+    "power": "115 - 120 PS",
+    "mileage": "17 - 24 km/l",
+    "transmission": "6MT / AMT / DCT",
+    "seats": 5,
+    "features": [
+      "5-star safety rating",
+      "Sunroof",
+      "360 camera",
+      "JBL sound system"
+    ]
+  },
+  {
+    "brand": "Tata",
+    "name": "Harrier",
+    "type": "Midsize SUV",
+    "price": "Rs 15 - 26 L",
+    "engine": "2.0L Diesel",
+    "power": "170 PS",
+    "mileage": "14 - 16 km/l",
+    "transmission": "6MT / 6AT",
+    "seats": 5,
+    "features": [
+      "ADAS",
+      "Panoramic sunroof",
+      "JBL sound system",
+      "Ventilated seats"
+    ]
+  },
+  {
+    "brand": "Tata",
+    "name": "Safari",
+    "type": "Midsize SUV",
+    "price": "Rs 15.5 - 27 L",
+    "engine": "2.0L Diesel",
+    "power": "170 PS",
+    "mileage": "14 - 16 km/l",
+    "transmission": "6MT / 6AT",
+    "seats": "6 / 7",
+    "features": [
+      "Captain seats",
+      "Panoramic sunroof",
+      "ADAS",
+      "JBL sound system"
+    ]
+  },
+  {
+    "brand": "Mahindra",
+    "name": "Thar",
+    "type": "Off-road SUV",
+    "price": "Rs 11.5 - 17.6 L",
+    "engine": "2.0L Petrol / 2.2L Diesel",
+    "power": "150 - 152 PS",
+    "mileage": "15 km/l",
+    "transmission": "6MT / 6AT",
+    "seats": 4,
+    "features": [
+      "4x4 drivetrain",
+      "Removable roof",
+      "Touchscreen",
+      "Hill descent control"
+    ]
+  },
+  {
+    "brand": "Mahindra",
+    "name": "Thar Roxx",
+    "type": "Off-road SUV",
+    "price": "Rs 12.9 - 23 L",
+    "engine": "2.0L Turbo Petrol / 2.2L Diesel",
+    "power": "162 - 177 PS",
+    "mileage": "12 - 15 km/l",
+    "transmission": "6MT / 6AT",
+    "seats": 5,
+    "features": [
+      "Panoramic sunroof",
+      "ADAS",
+      "4x4 option",
+      "Harman Kardon audio"
+    ]
+  },
+  {
+    "brand": "Mahindra",
+    "name": "Scorpio-N",
+    "type": "SUV",
+    "price": "Rs 13.6 - 25 L",
+    "engine": "2.0L Turbo Petrol / 2.2L Diesel",
+    "power": "175 - 203 PS",
+    "mileage": "12 - 15 km/l",
+    "transmission": "6MT / 6AT",
+    "seats": "6 / 7",
+    "features": [
+      "Sony 3D sound",
+      "Sunroof",
+      "4x4 option",
+      "6 airbags (top variants)"
+    ]
+  },
+  {
+    "brand": "Mahindra",
+    "name": "XUV700",
+    "type": "Midsize SUV",
+    "price": "Rs 14 - 26 L",
+    "engine": "2.0L Turbo Petrol / 2.2L Diesel",
+    "power": "185 - 200 PS",
+    "mileage": "13 - 16 km/l",
+    "transmission": "6MT / 6AT",
+    "seats": "5 / 7",
+    "features": [
+      "Dual 10.25-inch screens",
+      "ADAS Level 2",
+      "Sony 3D sound",
+      "Panoramic sunroof"
+    ]
+  },
+  {
+    "brand": "Mahindra",
+    "name": "XUV 3XO",
+    "type": "Compact SUV",
+    "price": "Rs 7.5 - 15.8 L",
+    "engine": "1.2L Turbo Petrol / 1.5L Diesel",
+    "power": "111 - 131 PS",
+    "mileage": "17 - 21 km/l",
+    "transmission": "6MT / 6AT",
+    "seats": 5,
+    "features": [
+      "Panoramic sunroof",
+      "Harman Kardon audio",
+      "ADAS Level 2",
+      "360 camera"
+    ]
+  },
+  {
+    "brand": "Kia",
+    "name": "Sonet",
+    "type": "Compact SUV",
+    "price": "Rs 8 - 15.7 L",
+    "engine": "1.2L Petrol / 1.0L Turbo / 1.5L Diesel",
+    "power": "83 - 120 PS",
+    "mileage": "18 - 24 km/l",
+    "transmission": "5MT / 6MT / iMT / DCT / 6AT",
+    "seats": 5,
+    "features": [
+      "Sunroof",
+      "Bose audio",
+      "ADAS (top variants)",
+      "Ventilated seats"
+    ]
+  },
+  {
+    "brand": "Kia",
+    "name": "Seltos",
+    "type": "Compact SUV",
+    "price": "Rs 11 - 20 L",
+    "engine": "1.5L Petrol / Diesel / Turbo",
+    "power": "115 - 160 PS",
+    "mileage": "17 - 20 km/l",
+    "transmission": "6MT / IVT / DCT / AT",
+    "seats": 5,
+    "features": [
+      "Dual 10.25-inch screens",
+      "ADAS",
+      "360 camera",
+      "Bose audio"
+    ]
+  },
+  {
+    "brand": "Kia",
+    "name": "Carens",
+    "type": "MPV",
+    "price": "Rs 10.5 - 19 L",
+    "engine": "1.5L Petrol / Turbo / Diesel",
+    "power": "115 - 160 PS",
+    "mileage": "15 - 21 km/l",
+    "transmission": "6MT / 7DCT / 6AT",
+    "seats": "6 / 7",
+    "features": [
+      "Sunroof",
+      "6 airbags (standard)",
+      "Ventilated seats",
+      "Bose audio"
+    ]
+  },
+  {
+    "brand": "Kia",
+    "name": "Syros",
+    "type": "Compact SUV",
+    "price": "Rs 9 - 17.8 L",
+    "engine": "1.0L Turbo Petrol / 1.5L Diesel",
+    "power": "116 - 120 PS",
+    "mileage": "18 - 20 km/l",
+    "transmission": "6MT / 7DCT / 6AT",
+    "seats": 5,
+    "features": [
+      "Large trinity panoramic display",
+      "Ventilated seats",
+      "ADAS",
+      "Harman Kardon audio"
+    ]
+  },
+  {
+    "brand": "Kia",
+    "name": "Carnival",
+    "type": "Premium MPV",
+    "price": "Rs 63 - 65 L",
+    "engine": "2.2L Diesel",
+    "power": "193 PS",
+    "mileage": "14 km/l",
+    "transmission": "8AT",
+    "seats": 7,
+    "features": [
+      "Dual sunroof",
+      "Power sliding doors",
+      "ADAS",
+      "Ventilated seats"
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "name": "Glanza",
+    "type": "Hatchback",
+    "price": "Rs 6.9 - 10 L",
+    "engine": "1.2L Petrol (CNG option)",
+    "power": "90 PS",
+    "mileage": "22 - 30 km/l",
+    "transmission": "5MT / AMT",
+    "seats": 5,
+    "features": [
+      "Touchscreen",
+      "Head-up display",
+      "360 camera",
+      "6 airbags"
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "name": "Urban Cruiser Hyryder",
+    "type": "Midsize SUV",
+    "price": "Rs 11 - 20 L",
+    "engine": "1.5L Petrol / Strong Hybrid / CNG",
+    "power": "92 - 103 PS",
+    "mileage": "19 - 28 km/l",
+    "transmission": "5MT / 6AT / e-CVT",
+    "seats": 5,
+    "features": [
+      "Panoramic sunroof",
+      "Head-up display",
+      "360 camera",
+      "AWD option"
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "name": "Innova Crysta",
+    "type": "MPV",
+    "price": "Rs 20 - 27 L",
+    "engine": "2.4L Diesel",
+    "power": "150 PS",
+    "mileage": "11 - 15 km/l",
+    "transmission": "5MT",
+    "seats": "7 / 8",
+    "features": [
+      "Captain seats",
+      "Touchscreen",
+      "Rear AC vents",
+      "7 airbags"
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "name": "Innova Hycross",
+    "type": "MPV",
+    "price": "Rs 19.9 - 31 L",
+    "engine": "2.0L Petrol / Strong Hybrid",
+    "power": "174 - 186 PS",
+    "mileage": "16 - 23 km/l",
+    "transmission": "CVT / e-CVT",
+    "seats": "7 / 8",
+    "features": [
+      "Panoramic sunroof",
+      "Ottoman seats (2nd row)",
+      "ADAS",
+      "Powered tailgate"
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "name": "Fortuner",
+    "type": "Full-size SUV",
+    "price": "Rs 33 - 51 L",
+    "engine": "2.7L Petrol / 2.8L Diesel",
+    "power": "166 - 204 PS",
+    "mileage": "10 - 14 km/l",
+    "transmission": "6MT / 6AT",
+    "seats": 7,
+    "features": [
+      "4x4 option",
+      "Ventilated seats",
+      "Powered tailgate",
+      "7 airbags"
+    ]
+  },
+  {
+    "brand": "MG",
+    "name": "Comet EV",
+    "type": "Micro EV",
+    "price": "Rs 7 - 10 L",
+    "engine": "17.3 kWh Electric",
+    "power": "42 PS",
+    "mileage": "230 km range",
+    "transmission": "Automatic",
+    "seats": 4,
+    "features": [
+      "Twin 10.25-inch screens",
+      "Compact city size",
+      "Connected car tech",
+      "Fast urban charging"
+    ]
+  },
+  {
+    "brand": "MG",
+    "name": "Astor",
+    "type": "Compact SUV",
+    "price": "Rs 10 - 18 L",
+    "engine": "1.5L Petrol / 1.3L Turbo",
+    "power": "110 - 140 PS",
+    "mileage": "14 - 15 km/l",
+    "transmission": "5MT / CVT / 6AT",
+    "seats": 5,
+    "features": [
+      "ADAS",
+      "Panoramic sunroof",
+      "AI assistant",
+      "Touchscreen"
+    ]
+  },
+  {
+    "brand": "MG",
+    "name": "Hector",
+    "type": "Midsize SUV",
+    "price": "Rs 14 - 23 L",
+    "engine": "1.5L Turbo Petrol / 2.0L Diesel",
+    "power": "143 - 170 PS",
+    "mileage": "12 - 15 km/l",
+    "transmission": "6MT / DCT / CVT",
+    "seats": "5 / 6 / 7",
+    "features": [
+      "14-inch touchscreen",
+      "Panoramic sunroof",
+      "ADAS",
+      "Ventilated seats"
+    ]
+  },
+  {
+    "brand": "MG",
+    "name": "Windsor EV",
+    "type": "Electric CUV",
+    "price": "Rs 14 - 18 L",
+    "engine": "38 kWh Electric",
+    "power": "136 PS",
+    "mileage": "332 km range",
+    "transmission": "Automatic",
+    "seats": 5,
+    "features": [
+      "Recline rear seats",
+      "Panoramic glass roof",
+      "15.6-inch screen",
+      "V2L support"
+    ]
+  },
+  {
+    "brand": "MG",
+    "name": "Gloster",
+    "type": "Full-size SUV",
+    "price": "Rs 39 - 45 L",
+    "engine": "2.0L Diesel",
+    "power": "163 - 216 PS",
+    "mileage": "10 - 12 km/l",
+    "transmission": "6AT / 8AT",
+    "seats": "6 / 7",
+    "features": [
+      "ADAS Level 2",
+      "4x4 option",
+      "Massage seats",
+      "Panoramic sunroof"
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "name": "Kylaq",
+    "type": "Compact SUV",
+    "price": "Rs 7.9 - 14 L",
+    "engine": "1.0L TSI Petrol",
+    "power": "115 PS",
+    "mileage": "19 - 20 km/l",
+    "transmission": "6MT / 6AT",
+    "seats": 5,
+    "features": [
+      "Sunroof",
+      "Ventilated front seats",
+      "8-inch touchscreen",
+      "6 airbags"
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "name": "Kushaq",
+    "type": "Compact SUV",
+    "price": "Rs 10.8 - 19 L",
+    "engine": "1.0L / 1.5L TSI Petrol",
+    "power": "115 - 150 PS",
+    "mileage": "18 - 19 km/l",
+    "transmission": "6MT / 6AT / 7DSG",
+    "seats": 5,
+    "features": [
+      "Ventilated seats",
+      "10-inch touchscreen",
+      "Sunroof",
+      "6 airbags"
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "name": "Slavia",
+    "type": "Sedan",
+    "price": "Rs 10.7 - 19 L",
+    "engine": "1.0L / 1.5L TSI Petrol",
+    "power": "115 - 150 PS",
+    "mileage": "18 - 19 km/l",
+    "transmission": "6MT / 6AT / 7DSG",
+    "seats": 5,
+    "features": [
+      "Ventilated front seats",
+      "10-inch touchscreen",
+      "Wireless charging",
+      "6 airbags"
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "name": "Kodiaq",
+    "type": "Premium SUV",
+    "price": "Rs 46 L onwards",
+    "engine": "2.0L TSI Petrol",
+    "power": "190 PS",
+    "mileage": "12 - 13 km/l",
+    "transmission": "7DSG",
+    "seats": 7,
+    "features": [
+      "AWD",
+      "Canton audio",
+      "Panoramic sunroof",
+      "ADAS"
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "name": "Superb",
+    "type": "Luxury Sedan",
+    "price": "Rs 54 - 60 L",
+    "engine": "2.0L TSI Petrol",
+    "power": "190 PS",
+    "mileage": "14 - 15 km/l",
+    "transmission": "7DSG",
+    "seats": 5,
+    "features": [
+      "Matrix LED headlamps",
+      "Canton audio",
+      "Ventilated seats",
+      "9 airbags"
+    ]
+  },
+  {
+    "brand": "BMW",
+    "name": "2 Series Gran Coupe",
+    "type": "Compact Sedan",
+    "price": "Rs 43 - 50 L",
+    "engine": "2.0L Turbo Petrol / Diesel",
+    "power": "150 - 190 PS",
+    "mileage": "16 - 18 km/l",
+    "transmission": "7DCT",
+    "seats": 5,
+    "features": [
+      "Curved display",
+      "Ambient lighting",
+      "Wireless charger",
+      "Parking assist"
+    ]
+  },
+  {
+    "brand": "BMW",
+    "name": "3 Series Gran Limousine",
+    "type": "Luxury Sedan",
+    "price": "Rs 60 - 80 L",
+    "engine": "2.0L Turbo Petrol / Diesel",
+    "power": "190 - 258 PS",
+    "mileage": "14 - 16 km/l",
+    "transmission": "8AT",
+    "seats": 5,
+    "features": [
+      "Long wheelbase",
+      "Panoramic sunroof",
+      "Harman Kardon audio",
+      "Live Cockpit display"
+    ]
+  },
+  {
+    "brand": "BMW",
+    "name": "X1",
+    "type": "Compact Luxury SUV",
+    "price": "Rs 50 - 53 L",
+    "engine": "2.0L Petrol / Diesel",
+    "power": "150 - 204 PS",
+    "mileage": "15 - 17 km/l",
+    "transmission": "7DCT",
+    "seats": 5,
+    "features": [
+      "Curved display",
+      "Panoramic sunroof",
+      "Parking assist",
+      "Ambient lighting"
+    ]
+  },
+  {
+    "brand": "BMW",
+    "name": "X5",
+    "type": "Luxury SUV",
+    "price": "Rs 98 L - 1 Cr",
+    "engine": "3.0L Petrol / Diesel",
+    "power": "286 - 340 PS",
+    "mileage": "10 - 13 km/l",
+    "transmission": "8AT",
+    "seats": 5,
+    "features": [
+      "xDrive AWD",
+      "Air suspension",
+      "Panoramic Sky Lounge roof",
+      "Curved display"
+    ]
+  },
+  {
+    "brand": "BMW",
+    "name": "7 Series",
+    "type": "Ultra-luxury Sedan",
+    "price": "Rs 1.8 - 2 Cr",
+    "engine": "3.0L Turbo Petrol",
+    "power": "380 PS",
+    "mileage": "10 - 11 km/l",
+    "transmission": "8AT",
+    "seats": 5,
+    "features": [
+      "Large rear theatre screen",
+      "Sky Lounge roof",
+      "Bowers & Wilkins audio",
+      "Rear touch controls"
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "name": "GLA",
+    "type": "Compact Luxury SUV",
+    "price": "Rs 51 - 57 L",
+    "engine": "1.3L Turbo Petrol / 2.0L Diesel",
+    "power": "163 - 190 PS",
+    "mileage": "14 - 17 km/l",
+    "transmission": "7DCT / 8DCT",
+    "seats": 5,
+    "features": [
+      "MBUX infotainment",
+      "Ambient lighting",
+      "Panoramic sunroof",
+      "Wireless charging"
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "name": "C-Class",
+    "type": "Luxury Sedan",
+    "price": "Rs 60 - 65 L",
+    "engine": "2.0L Turbo Petrol / Diesel",
+    "power": "197 - 204 PS",
+    "mileage": "15 - 18 km/l",
+    "transmission": "9AT",
+    "seats": 5,
+    "features": [
+      "Large portrait touchscreen",
+      "MBUX",
+      "Ambient lighting",
+      "Panoramic sunroof"
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "name": "GLC",
+    "type": "Luxury SUV",
+    "price": "Rs 76 - 80 L",
+    "engine": "2.0L Turbo Petrol / Diesel",
+    "power": "197 - 258 PS",
+    "mileage": "13 - 15 km/l",
+    "transmission": "9AT",
+    "seats": 5,
+    "features": [
+      "Mild hybrid",
+      "4MATIC AWD",
+      "Burmester audio",
+      "Panoramic sunroof"
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "name": "E-Class",
+    "type": "Luxury Sedan",
+    "price": "Rs 78 - 90 L",
+    "engine": "2.0L Turbo Petrol / Diesel",
+    "power": "197 - 204 PS",
+    "mileage": "13 - 16 km/l",
+    "transmission": "9AT",
+    "seats": 5,
+    "features": [
+      "Long wheelbase",
+      "Dual 12.3-inch displays",
+      "Burmester audio",
+      "Panoramic sunroof"
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "name": "S-Class",
+    "type": "Ultra-luxury Sedan",
+    "price": "Rs 1.8 - 2.2 Cr",
+    "engine": "3.0L Petrol / Diesel",
+    "power": "286 - 367 PS",
+    "mileage": "10 - 12 km/l",
+    "transmission": "9AT",
+    "seats": 5,
+    "features": [
+      "Air suspension",
+      "Burmester 4D audio",
+      "Rear-seat entertainment",
+      "Executive rear seats"
+    ]
+  }
+];
+
+/* ---------- Doubly linked list ---------- */
+class Node {
+  constructor(car) { this.car = car; this.next = null; this.prev = null; }
+}
+class CarList {
+  constructor() { this.head = null; this.tail = null; this.current = null; this.size = 0; }
+  add(car) {
+    const node = new Node(car);
+    if (!this.head) { this.head = this.tail = this.current = node; }
+    else { node.prev = this.tail; this.tail.next = node; this.tail = node; }
+    this.size++;
+  }
+  next() { if (this.current && this.current.next) this.current = this.current.next; return this.current; }
+  prev() { if (this.current && this.current.prev) this.current = this.current.prev; return this.current; }
+  goTo(car) {
+    for (let t = this.head; t; t = t.next) if (t.car === car) { this.current = t; return true; }
+    return false;
+  }
+  position() {
+    let i = 1;
+    for (let t = this.head; t && t !== this.current; t = t.next) i++;
+    return i;
+  }
+  toArray() {
+    const out = [];
+    for (let t = this.head; t; t = t.next) out.push(t.car);
+    return out;
+  }
+  static from(cars) { const l = new CarList(); cars.forEach(c => l.add(c)); return l; }
+}
+
+/* ---------- State ---------- */
+const state = { query: "", brand: "All", list: CarList.from(CARS), compareWith: "" };
+const BRANDS = ["All", ...new Set(CARS.map(c => c.brand))];
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+const money = s => String(s).replace(/Rs/g, "₹");
+
+function applyFilters() {
+  const keep = state.list.current ? state.list.current.car : null;
+  const q = state.query.trim().toLowerCase();
+  const filtered = CARS.filter(c =>
+    (state.brand === "All" || c.brand === state.brand) &&
+    (c.brand + " " + c.name + " " + c.type).toLowerCase().includes(q)
+  );
+  state.list = CarList.from(filtered);       // rebuild the linked list for this view
+  if (keep) state.list.goTo(keep);
+  state.compareWith = "";
+  render();
+}
+
+/* ---------- Rendering ---------- */
+function renderBrands() {
+  $("brands").innerHTML = BRANDS.map(b => {
+    const n = b === "All" ? CARS.length : CARS.filter(c => c.brand === b).length;
+    return `<button type="button" data-brand="${esc(b)}" aria-pressed="${b === state.brand}">${esc(b)} (${n})</button>`;
+  }).join("");
+}
+
+function renderSheet() {
+  const node = state.list.current;
+  const el = $("sheet");
+  if (!node) {
+    el.innerHTML = `<div class="empty">No cars match “${esc(state.query)}”${state.brand !== "All" ? " in " + esc(state.brand) : ""}. Clear the search or pick another brand.</div>`;
+    return;
+  }
+  const c = node.car;
+  const rows = [
+    ["Engine", c.engine], ["Power", c.power], ["Mileage / range", c.mileage],
+    ["Transmission", c.transmission], ["Seats", c.seats], ["Body type", c.type]
+  ];
+  const others = CARS.filter(x => x !== c);
+  el.innerHTML = `
+    <div class="top">
+      <span class="plate" title="Position in the list">${state.list.position()} / ${state.list.size}</span>
+      <div class="nav">
+        <button type="button" id="prev" ${node.prev ? "" : "disabled"}>Previous</button>
+        <button type="button" id="next" ${node.next ? "" : "disabled"}>Next</button>
+      </div>
+    </div>
+    <div class="title">
+      <div>
+        <div class="brand">${esc(c.brand)}</div>
+        <h2>${esc(c.name)}</h2>
+        <div class="kind">${esc(c.type)}</div>
+      </div>
+      <div class="price"><strong>${esc(money(c.price))}</strong><span>Ex-showroom, approx.</span></div>
+    </div>
+    <dl class="specs">
+      ${rows.map(r => `<div><dt>${esc(r[0])}</dt><dd>${esc(r[1])}</dd></div>`).join("")}
+    </dl>
+    <h3 class="feat-title">Key features</h3>
+    <ul class="feats">${c.features.map(f => `<li>${esc(f)}</li>`).join("")}</ul>
+    <div class="cmp">
+      <label for="cmpSel">Compare with</label>
+      <select id="cmpSel">
+        <option value="">Choose a car</option>
+        ${others.map(o => `<option value="${CARS.indexOf(o)}" ${String(CARS.indexOf(o)) === state.compareWith ? "selected" : ""}>${esc(o.brand + " " + o.name)}</option>`).join("")}
+      </select>
+    </div>`;
+}
+
+function renderCompare() {
+  const box = $("compare");
+  const node = state.list.current;
+  if (!node || state.compareWith === "") { box.innerHTML = ""; return; }
+  const a = node.car, b = CARS[Number(state.compareWith)];
+  const keys = [["Price", "price"], ["Engine", "engine"], ["Power", "power"], ["Mileage / range", "mileage"],
+                ["Transmission", "transmission"], ["Seats", "seats"], ["Body type", "type"]];
+  box.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th></th><th>${esc(a.brand + " " + a.name)}</th><th>${esc(b.brand + " " + b.name)}</th></tr></thead>
+        <tbody>
+          ${keys.map(([label, k]) => `<tr><th scope="row">${label}</th><td>${esc(money(a[k]))}</td><td>${esc(money(b[k]))}</td></tr>`).join("")}
+          <tr><th scope="row">Features</th><td>${a.features.map(esc).join("<br>")}</td><td>${b.features.map(esc).join("<br>")}</td></tr>
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function renderRows() {
+  const cars = state.list.toArray();
+  const cur = state.list.current ? state.list.current.car : null;
+  $("count").textContent = `${cars.length} of ${CARS.length} cars`;
+  $("rows").innerHTML = cars.length
+    ? cars.map((c, i) => `
+        <li><button type="button" class="row" data-i="${i}" ${c === cur ? 'aria-current="true"' : ""}>
+          <span class="n">${esc(c.brand + " " + c.name)}</span>
+          <span class="t">${esc(c.type)}</span>
+          <span class="p">${esc(money(c.price))}</span>
+        </button></li>`).join("")
+    : `<li class="empty">Nothing to list yet.</li>`;
+}
+
+function render() {
+  renderBrands();
+  renderSheet();
+  renderCompare();
+  renderRows();
+}
+
+/* ---------- Events ---------- */
+$("q").addEventListener("input", e => { state.query = e.target.value; applyFilters(); });
+
+$("brands").addEventListener("click", e => {
+  const b = e.target.closest("button[data-brand]");
+  if (!b) return;
+  state.brand = b.dataset.brand;
+  applyFilters();
+});
+
+$("sheet").addEventListener("click", e => {
+  if (e.target.id === "next") { state.list.next(); state.compareWith = ""; render(); $("next").focus?.(); }
+  if (e.target.id === "prev") { state.list.prev(); state.compareWith = ""; render(); $("prev").focus?.(); }
+});
+
+$("sheet").addEventListener("change", e => {
+  if (e.target.id === "cmpSel") { state.compareWith = e.target.value; renderCompare(); }
+});
+
+$("rows").addEventListener("click", e => {
+  const r = e.target.closest(".row");
+  if (!r) return;
+  const car = state.list.toArray()[Number(r.dataset.i)];
+  state.list.goTo(car);
+  state.compareWith = "";
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+document.addEventListener("keydown", e => {
+  if (["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement.tagName)) return;
+  if (e.key === "ArrowRight") { state.list.next(); state.compareWith = ""; render(); }
+  if (e.key === "ArrowLeft") { state.list.prev(); state.compareWith = ""; render(); }
+});
+
+render();
+</script>
+</body>
+</html>
